@@ -225,7 +225,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 
   <div class="final">
     <h2>Ready to open the books?</h2>
-    <p>The app runs securely on Google and Supabase. Your sign-in decides what you can see and change.</p>
+    <p>The app runs securely on GitHub Pages and Supabase. Your sign-in decides what you can see and change.</p>
     <a class="btn lg launch" href="#">Launch LCA Church Finance</a>
   </div>
 </main>
@@ -238,8 +238,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 </footer>
 
 <script>
-  // The live web app (Google Apps Script deployment). Update here if the deployment URL ever changes.
-  var APP_URL = 'https://script.google.com/macros/s/AKfycbyrO_9YIyRLXqpPQB7a99PxiRfeCKvw2UiVRDhFQ3ifVtuT6PiBXHymDtMplgrzvhU4/exec';
+  // The app lives in the app/ folder of this site (GitHub Pages + Supabase).
+  var APP_URL = 'app/';
   document.querySelectorAll('a.launch').forEach(function (a) { a.href = APP_URL; a.rel = 'noopener'; });
   document.getElementById('yr').textContent = new Date().getFullYear();
 </script>

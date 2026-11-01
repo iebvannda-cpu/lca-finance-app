@@ -1,12 +1,15 @@
-# LCA Church Finance — Launch page
+# LCA Church Finance
 
-Public launch page for the LCA Church Finance web app.
+Church finance app for LCA: income and expenses in USD and KHR, funds, budgets and reports.
 
-**Open the app:** https://iebvannda-cpu.github.io/lca-finance-app/
+- **Launch page:** https://iebvannda-cpu.github.io/lca-finance-app/
+- **App:** https://iebvannda-cpu.github.io/lca-finance-app/app/
 
-The page links to the live Google Apps Script web app. Members sign in with Google, and only approved church members can see financial data.
+The app runs entirely on GitHub Pages and talks directly to Supabase. Members sign in with Google; Supabase Row Level Security decides what each person can see and change.
 
-- `index.html`: the whole page (no build step)
-- To change where "Launch app" goes, edit `APP_URL` near the bottom of `index.html`.
+- `index.html`: launch page
+- `app/index.html`: the finance app (single file, no build step)
 
-The app's source code is kept in a separate private repository.
+The key in `app/index.html` is Supabase's **publishable** key, which is designed to be public. Never put the `service_role` or secret key in this repository.
+
+Database migrations and project history are kept in the private `lca-finance` repository.
