@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LCA Church Finance</title>
+<meta name="description" content="LCA Church Finance: record giving and spending in USD and KHR, track funds and budgets, and see reports in one place.">
+<meta property="og:title" content="LCA Church Finance">
+<meta property="og:description" content="Record giving and spending in USD and KHR, track funds and budgets, and see reports in one place.">
+<meta name="theme-color" content="#1d4a73">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b88a1b'/%3E%3Cpath d='M29 14h6v12h12v6H35v18h-6V32H17v-6h12z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#fff;--ink:#16202c;--muted:#5f6c7b;--line:#e2e7ed;
+  --brand:#1d4a73;--brand-2:#2b6aa6;--brand-soft:#e8f0f8;--gold:#b88a1b;--gold-soft:#fbf3df;
+  --khr:#8a4b0f;--khr-soft:#fcebd7;--ok:#1b8a57;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e141b;--panel:#16202b;--ink:#e8eef5;--muted:#9aa8b8;--line:#253242;
+    --brand:#6fa8dc;--brand-2:#8bbbe6;--brand-soft:#1b2d40;--gold:#e0b44a;--gold-soft:#2c2614;
+    --khr:#f0b077;--khr-soft:#33230f;--ok:#4cc38a;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,'Kantumruy Pro',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--gold);display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px}
+.brand{font-weight:700;letter-spacing:-.01em}
+.grow{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:10px 18px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid transparent;transition:transform .15s ease,background .15s ease,box-shadow .15s ease;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 18px -8px var(--brand)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0e141b}}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.ghost{border-color:var(--line);background:var(--panel)}
+.btn.lg{padding:14px 26px;font-size:16px;border-radius:12px}
+.btn svg{width:18px;height:18px}
+
+/* hero */
+.hero{padding:72px 0 40px;display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);padding:5px 12px;border-radius:999px}
+h1{font-size:clamp(34px,5vw,52px);line-height:1.08;letter-spacing:-.03em;margin:18px 0 16px;font-weight:800}
+h1 em{font-style:normal;color:var(--gold)}
+.lead{font-size:18px;color:var(--muted);max-width:30em;margin:0 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.note{font-size:13px;color:var(--muted);margin-top:14px;display:flex;align-items:center;gap:6px}
+.note svg{width:15px;height:15px;flex:none}
+
+/* preview card */
+.preview{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 30px 60px -30px rgba(16,32,48,.35)}
+.pv-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pv-h b{font-size:14px}
+.pv-h span{font-size:12px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.row{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+.cur{font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:6px;min-width:34px;text-align:center}
+.cur.usd{background:var(--brand-soft);color:var(--brand)}
+.cur.khr{background:var(--khr-soft);color:var(--khr)}
+.v{font-weight:700;font-variant-numeric:tabular-nums;font-size:17px}
+.v.in{color:var(--ok)}
+.tx{margin-top:14px;border-top:1px solid var(--line)}
+.tx div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.tx div:last-child{border-bottom:0}
+.no{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;font-weight:600;background:var(--brand-soft);color:var(--brand);padding:2px 7px;border-radius:6px}
+.cat{color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amt{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* sections */
+section{padding:56px 0}
+h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 32px;max-width:40em}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.ic{width:40px;height:40px;border-radius:10px;background:var(--gold-soft);color:var(--gold);display:grid;place-items:center;margin-bottom:14px}
+.ic svg{width:20px;height:20px}
+.card h3{margin:0 0 6px;font-size:16px}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+
+.fmt{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:clamp(22px,3.4vw,34px);font-weight:700;letter-spacing:.02em;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.code span{padding:6px 12px;border-radius:10px}
+.code .t{background:var(--brand-soft);color:var(--brand)}
+.code .m{background:var(--gold-soft);color:var(--gold)}
+.code .s{background:var(--khr-soft);color:var(--khr)}
+.code i{font-style:normal;color:var(--muted)}
+.legend{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.legend li{display:flex;gap:12px;align-items:baseline}
+.legend b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;min-width:74px}
+
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{position:relative;padding-top:44px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:0;left:22px;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;transform:translateY(14px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .step::before{color:#0e141b}}
+
+.final{text-align:center;background:var(--brand);color:#fff;border-radius:22px;padding:48px 24px;margin:8px 0 56px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .final{background:var(--brand-soft);color:var(--ink)}}
+.final h2{color:inherit}
+.final p{opacity:.85;margin:0 auto 24px;max-width:34em}
+.final .btn{background:var(--gold);color:#1b1407}
+.final .btn:hover{background:#cc9c26}
+
+footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:44px;gap:32px}
+  .grid,.steps{grid-template-columns:1fr}
+  .fmt{grid-template-columns:1fr}
+  .bar .btn.ghost{display:none}
+}
+@media (max-width:420px){
+  .kpis{grid-template-columns:1fr}
+  .btn.lg{width:100%}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#fff"><path d="M10.5 3h3v5h5v3h-5v10h-3V11h-5V8h5z"/></svg></div>
+    <span class="brand">LCA Church Finance</span>
+    <span class="grow"></span>
+    <a class="btn ghost" href="#how">How it works</a>
+    <a class="btn primary launch" href="#">Launch app</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <span class="eyebrow">LCA Church · Finance</span>
+      <h1>Church giving and spending, <em>clear in USD and KHR.</em></h1>
+      <p class="lead">Record tithes, offerings and expenses as they happen, keep designated funds and budgets on track, and see the whole picture on one dashboard.</p>
+      <div class="cta">
+        <a class="btn primary lg launch" href="#">
+          Launch app
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn ghost lg" href="#features">See features</a>
+      </div>
+      <p class="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Sign in with your Google account. Only approved church members see financial data.
+      </p>
+    </div>
+
+    <div class="preview" aria-label="Example of the dashboard">
+      <div class="pv-h"><b>This month</b><span>Example data</span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">Income</div>
+          <div class="row"><span class="cur usd">USD</span><span class="v in">$1,240.00</span></div>
+          <div class="row"><span class="cur khr">KHR</span><span class="v in">៛2,350,000</span></div>
+        </div>
+        <div class="kpi"><div class="l">Fund balance</div>
+          <div class="row"><span class="cur usd">USD</span><span class="v">$8,915.50</span></div>
+          <div class="row"><span class="cur khr">KHR</span><span class="v">៛4,120,000</span></div>
+        </div>
+      </div>
+      <div class="tx">
+        <div><span class="no">INC-202611-0001</span><span class="cat">I-01 · Tithes</span><span class="amt">$320.00</span></div>
+        <div><span class="no">INC-202611-0002</span><span class="cat">I-02 · Sunday Offering</span><span class="amt">៛850,000</span></div>
+        <div><span class="no">EXP-202611-0001</span><span class="cat">E-14 · Utilities - Electricity</span><span class="amt">$58.00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="features">
+    <h2>Everything the treasurer needs</h2>
+    <p class="sub">Built for how our church actually handles money: two currencies, designated gifts, and a team that needs to see the same numbers.</p>
+    <div class="grid">
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7.5C17 5.6 14.8 4.5 12 4.5S7 5.6 7 7.5 9.2 10.3 12 11s5 1.6 5 3.8-2.2 3.2-5 3.2-5-1.1-5-3"/></svg></div>
+        <h3>USD and KHR, side by side</h3><p>Record each amount in the currency it was given or spent. Nothing is converted; totals are shown per currency.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+        <h3>Income and expenses</h3><p>Tithes, offerings, donations and every expense, with category, payment method, fund and a photo of the receipt.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18M12 3l9 5H3z"/></svg></div>
+        <h3>Designated funds</h3><p>Building, mission and general funds each keep their own balance, so designated gifts are spent as intended.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <h3>Dashboard and reports</h3><p>Monthly income, expenses and net, a six-month trend with a USD / KHR switch, and budget progress at a glance.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/></svg></div>
+        <h3>Code dictionary</h3><p>Every category has a code and a "when to use it" tip, like I-01 Tithes or E-14 Electricity, so entries stay consistent.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Safe and accountable</h3><p>Each person sees only their church's data, by role. Every change is kept in an audit log, and transactions are reversed, never deleted.</p></div>
+    </div>
+  </section>
+
+  <section id="numbers">
+    <div class="fmt">
+      <div>
+        <h2>Every transaction gets a number</h2>
+        <p class="sub" style="margin-bottom:20px">Numbers are assigned automatically when you save, so anyone can find, check or correct a record by quoting it.</p>
+        <div class="code" aria-label="INC-202611-0001"><span class="t">INC</span><i>–</i><span class="m">202611</span><i>–</i><span class="s">0001</span></div>
+      </div>
+      <ul class="legend">
+        <li><b>INC / EXP</b><span>Income or expense</span></li>
+        <li><b>202611</b><span>Year and month of the transaction (November 2026)</span></li>
+        <li><b>0001</b><span>Running number for that type and month, restarting each month</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How to start</h2>
+    <p class="sub">Takes about a minute the first time.</p>
+    <div class="steps">
+      <div class="card step"><h3>Open the app</h3><p>Click Launch app on this page. Add it to your phone's home screen for quick access.</p></div>
+      <div class="card step"><h3>Sign in with Google</h3><p>Use the Google account the church admin added. New here? Ask the treasurer or an admin for access.</p></div>
+      <div class="card step"><h3>Record and review</h3><p>Use Record income or Record expense, pick a category from the code list, and check the dashboard.</p></div>
+    </div>
+  </section>
+
+  <div class="final">
+    <h2>Ready to open the books?</h2>
+    <p>The app runs securely on Google and Supabase. Your sign-in decides what you can see and change.</p>
+    <a class="btn lg launch" href="#">Launch LCA Church Finance</a>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> LCA Church · Finance</span>
+    <span>Questions or access requests: contact your church treasurer or admin.</span>
+  </div>
+</footer>
+
+<script>
+  // The live web app (Google Apps Script deployment). Update here if the deployment URL ever changes.
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbyrO_9YIyRLXqpPQB7a99PxiRfeCKvw2UiVRDhFQ3ifVtuT6PiBXHymDtMplgrzvhU4/exec';
+  document.querySelectorAll('a.launch').forEach(function (a) { a.href = APP_URL; a.rel = 'noopener'; });
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
