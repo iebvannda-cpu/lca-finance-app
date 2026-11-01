@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LCA Church · Finance</title>
+<meta name="theme-color" content="#1d4a73">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#fff;--ink:#16202c;--muted:#5f6c7b;--line:#e2e7ed;
+  --brand:#1d4a73;--brand-2:#2b6aa6;--brand-soft:#e8f0f8;--gold:#b88a1b;
+  --ok:#1b8a57;--ok-soft:#e5f5ec;--bad:#c0392b;--bad-soft:#fbeae8;
+  --radius:12px;--shadow:0 1px 2px rgba(16,32,48,.06),0 4px 16px rgba(16,32,48,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Inter,'Kantumruy Pro',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45}
+button,input,select{font:inherit}
+.hidden{display:none!important}
+
+
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.login-hero{background:linear-gradient(150deg,#163a5c 0%,#1d4a73 55%,#2b6aa6 100%);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between}
+.login-hero h1{font-size:36px;line-height:1.15;margin:24px 0 12px;font-weight:700;letter-spacing:-.02em}
+.login-hero p{opacity:.85;max-width:440px;margin:0}
+.pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:460px}
+.pillar{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 14px;font-size:13px}
+.pillar b{display:block;font-size:14px;margin-bottom:2px}
+.login-side{display:flex;align-items:center;justify-content:center;padding:32px}
+.login-card{width:100%;max-width:380px}
+.login-card h2{margin:0 0 6px;font-size:24px}
+.login-card .sub{color:var(--muted);margin:0 0 28px}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:var(--shadow)}
+.btn-google:hover{border-color:#c5ced8}
+.fine{color:var(--muted);font-size:12px;margin-top:20px;display:flex;gap:8px;align-items:flex-start}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:var(--gold);display:grid;place-items:center;color:#fff}
+
+
+.shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.side{background:#10283f;color:#c9d6e3;padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side .brand{color:#fff;padding:4px 8px 18px}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;border:0;background:none;color:inherit;text-align:left;width:100%}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav.on{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
+.nav svg{width:18px;height:18px;flex:none}
+.side .grow{flex:1}
+.side small{padding:8px 10px;color:#7f93a8;font-size:11px}
+.main{min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top h1{font-size:20px;margin:0}
+.top .crumb{color:var(--muted);font-size:12px}
+.who{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.who .meta{font-size:12px;line-height:1.2;text-align:right}
+.who .meta span{color:var(--muted)}
+.content{padding:24px 28px 48px;max-width:1280px}
+
+
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:#c5ced8}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.card-h h3{margin:0;font-size:15px}
+.card-b{padding:16px 18px}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.two{grid-template-columns:1.6fr 1fr}
+.kpi{padding:16px 18px}
+.kpi .lbl{color:var(--muted);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.kpi .val{font-size:26px;font-weight:700;margin:6px 0 2px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .alt{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.kpi.inc .val{color:var(--ok)} .kpi.exp .val{color:var(--bad)}
+.kpi .cur-row{display:flex;align-items:baseline;gap:8px;margin-top:8px;min-width:0}
+.kpi .cur-row .val{font-size:clamp(16px,1.7vw,22px);margin:0;overflow-wrap:anywhere}
+.cur{display:inline-block;min-width:36px;text-align:center;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.05em;flex:none}
+.cur.usd{background:#e6eef7;color:#1d4a73}
+.cur.khr{background:#fcebd7;color:#8a4b0f}
+.fund-tbl{width:100%;border-collapse:collapse}
+.txno{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;font-weight:600;background:#eef2f7;color:#1d4a73;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.txno-preview{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);background:#f4f6f8}
+#dictRoot .modal-bg{z-index:1000}
+.dict-modal{max-width:780px;width:calc(100vw - 32px);max-height:86vh;display:flex;flex-direction:column}
+.dict-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}
+.dict-tabs button{border:1px solid var(--line);background:none;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
+.dict-tabs button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.dict-modal .search{width:100%;margin-bottom:10px}
+.dict-body{overflow:auto;min-height:0}
+.dict-tbl td{vertical-align:top}
+.dict-big{display:flex;gap:10px;align-items:center;margin:6px 0}
+.cat-tip b{color:var(--brand)}
+.hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4}
+.fund-tbl th,.fund-tbl td{padding:8px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.fund-tbl tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line)}
+.fund-tbl td.khr{color:#8a4b0f;font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-left:auto;margin-right:12px}
+.seg button{border:0;background:none;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--brand);color:#fff}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;background:#fafbfc;position:sticky;top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.tbl-wrap{overflow:auto;max-height:65vh}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.tag.income{background:var(--ok-soft);color:var(--ok)} .tag.expense{background:var(--bad-soft);color:var(--bad)}
+.bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--brand-2);border-radius:99px}
+.bar i.over{background:var(--bad)}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.list-item{padding:10px 0;border-bottom:1px solid var(--line)}
+.list-item:last-child{border-bottom:0}
+.muted{color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:28px 12px}
+.chart{display:flex;align-items:flex-end;gap:14px;height:180px;padding-top:8px}
+.chart .m{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.chart .bars{flex:1;display:flex;align-items:flex-end;gap:4px;width:100%;justify-content:center}
+.chart .bars i{width:40%;max-width:22px;border-radius:4px 4px 0 0;min-height:2px}
+.chart .bars i.a{background:var(--ok)} .chart .bars i.b{background:var(--bad)}
+.chart .m span{font-size:11px;color:var(--muted)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .grow{flex:1}
+.search{padding:8px 12px;border:1px solid var(--line);border-radius:8px;min-width:220px;background:#fff}
+.drop{border:2px dashed #c9d3de;border-radius:10px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;background:#fafbfc}
+.drop.over{border-color:var(--brand-2);background:var(--brand-soft)}
+.notice{background:#fff8e6;border:1px solid #f0dca6;color:#7a5a00;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+.skeleton{background:linear-gradient(90deg,#eef1f4,#f7f9fa,#eef1f4);background-size:200% 100%;animation:sh 1.2s infinite;border-radius:8px;height:110px}
+@keyframes sh{to{background-position:-200% 0}}
+
+
+.modal-bg{position:fixed;inset:0;background:rgba(16,32,48,.45);display:grid;place-items:center;z-index:50;padding:16px}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow:auto}
+.modal form{padding:18px;display:grid;gap:12px}
+.field label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:var(--muted)}
+.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.field input:focus,.field select:focus{outline:2px solid var(--brand-soft);border-color:var(--brand-2)}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.toast{position:fixed;right:20px;bottom:20px;background:#16202c;color:#fff;padding:12px 16px;border-radius:10px;z-index:60;max-width:380px;box-shadow:var(--shadow)}
+.toast.bad{background:var(--bad)} .toast.ok{background:var(--ok)}
+
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .login{grid-template-columns:1fr}.login-hero{padding:28px 20px}.login-hero h1{font-size:26px}.pillars{display:none}
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px}
+  .side .brand,.side .grow,.side small{display:none}
+  #nav{display:flex;gap:4px}
+  .nav{width:auto;white-space:nowrap}
+  .top{padding:12px 16px}.content{padding:16px}
+  .who .meta{display:none}
+  .kpis{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="boot" style="padding:24px;font:14px system-ui,sans-serif;color:#5f6c7b">Loading…</div>
+<script>
+// Shows any startup failure on the page instead of leaving it blank.
+window.addEventListener('error', function (e) {
+  var b = document.getElementById('boot'); if (!b) return;
+  var t = e.target && e.target !== window && (e.target.src || e.target.href);
+  b.style.color = '#c0392b';
+  b.textContent = 'Startup problem: ' + (t ? 'could not load ' + t : (e.message || 'unknown error') + (e.lineno ? ' (line ' + e.lineno + ')' : ''));
+}, true);
+window.addEventListener('unhandledrejection', function (e) {
+  var b = document.getElementById('boot'); if (b) { b.style.color = '#c0392b'; b.textContent = 'Startup problem: ' + ((e.reason && e.reason.message) || e.reason); }
+});
+</script>
+
+<!-- Setup notice (shown when Script properties are missing) -->
+<section id="setup" class="login-side hidden" style="min-height:100vh">
+  <div class="card card-b" style="max-width:520px">
+    <h2 style="margin-top:0">Connect Supabase</h2>
+    <p class="muted">Open <b>Project Settings → Script properties</b> in the Apps Script editor and add:</p>
+    <p><code>SUPABASE_URL</code> — https://your-project.supabase.co<br><code>SUPABASE_ANON_KEY</code> — your anon (public) key<br><code>CHURCH_NAME</code> — optional</p>
+    <p class="muted">Then reload this page.</p>
+  </div>
+</section>
+
+<!-- Front page / sign in -->
+<section id="login" class="login hidden">
+  <div class="login-hero">
+    <div class="brand"><div class="brand-mark" id="markA"></div><span class="church"></span></div>
+    <div>
+      <h1>Faithful stewardship,<br>clear records.</h1>
+      <p>Tithes, offerings, expenses, funds and budgets in one place, with receipts attached and every change logged.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><b>Income &amp; Expenses</b>Record giving and spending in USD or KHR</div>
+      <div class="pillar"><b>Funds &amp; Budgets</b>Track designated funds against plan</div>
+      <div class="pillar"><b>Receipts</b>Documents stored securely with each entry</div>
+      <div class="pillar"><b>Accountability</b>Role-based access and a full audit log</div>
+    </div>
+  </div>
+  <div class="login-side">
+    <div class="login-card">
+      <h2>Welcome back</h2>
+      <p class="sub">Sign in with your church Google account to continue.</p>
+      <button class="btn-google" id="btnGoogle">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+        Continue with Google
+      </button>
+      <div class="fine">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>Secured by Supabase Authentication. You only see the records your role allows.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- App -->
+<section id="app" class="shell hidden">
+  <aside class="side">
+    <div class="brand"><div class="brand-mark" id="markB"></div><span class="church"></span></div>
+    <nav id="nav"></nav>
+    <div class="grow"></div>
+    <button class="nav" id="btnOut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+    <small>Apps Script · Supabase</small>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <div><div class="crumb" id="crumb"></div><h1 id="title">Dashboard</h1></div>
+      <div class="who"><div class="meta"><b id="uName"></b><br><span id="uMail"></span></div><div class="avatar" id="uAvatar"></div></div>
+    </header>
+    <div class="content" id="view"></div>
+  </main>
+</section>
+
+<div id="modalRoot"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const step = t => { const b = document.getElementById('boot'); if (b) b.textContent = t; };
+step('Starting… (1/4)');
+// Static configuration (GitHub Pages build). The publishable key is safe in a browser: Row Level Security protects the data.
+const _qs = new URLSearchParams(location.search);
+const CFG = {
+  url: 'https://ylylwevrmuyxmxeuoqlh.supabase.co',
+  anonKey: 'sb_publishable_kU3JOQTcbU-taSVc2EEWZA_ZgC9o6Of',
+  churchName: 'LCA Church',
+  bucket: 'receipts',
+  appUrl: location.origin + location.pathname,
+  authCode: _qs.get('code') || '',
+  authError: _qs.get('error_description') || _qs.get('error') || ''
+};
+
+const ICON = {
+  dashboard:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  income:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  expense:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
+  funds:'<path d="M3 10h18M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18M12 3l9 5H3z"/>',
+  budget:'<circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 6"/>',
+  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  documents:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+  audit:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  cross:'<path d="M12 3v18M6 9h12" stroke-width="2.6"/>'
+};
+const svg = (k, s) => `<svg viewBox="0 0 24 24" ${s?`width="${s}" height="${s}"`:''} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>`;
+
+const PAGES = [
+  {id:'dashboard', label:'Dashboard', crumb:'Overview'},
+  {id:'income',    label:'Income',    crumb:'Transactions'},
+  {id:'expense',   label:'Expenses',  crumb:'Transactions'},
+  {id:'funds',     label:'Funds',     crumb:'Fund accounting'},
+  {id:'budget',    label:'Budget',    crumb:'Planning'},
+  {id:'reports',   label:'Reports',   crumb:'Reporting views'},
+  {id:'documents', label:'Documents', crumb:'Supabase Storage'},
+  {id:'audit',     label:'Audit Log', crumb:'Security'}
+];
+
+// Form fields per section. Names must match your Supabase columns.
+const TX_FIELDS = [
+  {name:'transaction_date', label:'Date', type:'date', required:true},
+  {name:'amount', label:'Amount', type:'number', step:'0.01', required:true},
+  {name:'currency', label:'Currency', type:'select', options:['USD','KHR']},
+  {name:'fund_id', label:'Fund', type:'fund'},
+  {name:'description', label:'Description', type:'text'},
+  {name:'receipt_path', label:'Receipt (optional)', type:'file'}
+];
+// Transaction No. format: TYPE-YYYYMM-SEQUENCE, e.g. INC-202611-0001 / EXP-202611-0001
+// INC = Income, EXP = Expense, YYYYMM = month of the transaction, 0001 = running number for that type and month.
+const INCOME_FIELDS = [
+  {name:'transaction_no', label:'Transaction No.', type:'txno', prefix:'INC'},
+  {name:'transaction_date', label:'Date', type:'date', required:true},
+  {name:'amount', label:'Amount', type:'number', step:'0.01', required:true},
+  {name:'currency', label:'Currency', type:'select', options:['USD','KHR']},
+  {name:'category_id', label:'Category', type:'ref', source:'income_categories', required:true},
+  {name:'payment_method_id', label:'Payment method', type:'ref', source:'payment_methods', required:true},
+  {name:'fund_id', label:'Fund', type:'fund'},
+  {name:'description', label:'Description', type:'text'},
+  {name:'receipt_path', label:'Receipt (optional)', type:'file'}
+];
+const EXPENSE_FIELDS = [
+  {name:'transaction_no', label:'Transaction No.', type:'txno', prefix:'EXP'},
+  {name:'transaction_date', label:'Date', type:'date', required:true},
+  {name:'amount', label:'Amount', type:'number', step:'0.01', required:true},
+  {name:'currency', label:'Currency', type:'select', options:['USD','KHR']},
+  {name:'category_id', label:'Category', type:'ref', source:'expense_categories', required:true},
+  {name:'fund_id', label:'Fund', type:'fund'},
+  {name:'description', label:'Description', type:'text'},
+  {name:'receipt_path', label:'Receipt (optional)', type:'file'}
+];
+const FORMS = {
+  income:  {title:'Record income',  fields:INCOME_FIELDS},
+  expense: {title:'Record expense', fields:EXPENSE_FIELDS},
+  funds:   {title:'New fund', fields:[
+    {name:'name', label:'Fund name', type:'text', required:true},
+    {name:'currency', label:'Currency', type:'select', options:['USD','KHR']},
+    {name:'description', label:'Description', type:'text'}]},
+  budget:  {title:'New budget line', fields:[
+    {name:'name', label:'Name', type:'text', required:true},
+    {name:'fund_id', label:'Fund', type:'fund'},
+    {name:'period_start', label:'Start', type:'date', required:true},
+    {name:'period_end', label:'End', type:'date', required:true},
+    {name:'amount', label:'Amount', type:'number', step:'0.01', required:true},
+    {name:'currency', label:'Currency', type:'select', options:['USD','KHR']}]}
+};
+
+let sb, me, churchId = null, funds = [], current = 'dashboard', rowsCache = [];
+const lookups = { income_categories: [], expense_categories: [], payment_methods: [] };
+const loadLookups = () => Promise.all(Object.keys(lookups).map(k =>
+  call('list', {resource:k, limit:500}).then(r => { lookups[k] = r || []; }).catch(() => {})));
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = (n, cur='USD') => cur === 'KHR'
+  ? '៛' + Math.round(Number(n)||0).toLocaleString('en-US')
+  : '$' + (Number(n)||0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+const monthName = m => new Date(m + '-01T00:00:00').toLocaleString('en-US', {month:'short'});
+
+function toast(msg, kind='') {
+  const t = $('#toast'); t.textContent = msg; t.className = 'toast ' + kind;
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('hidden'), 4200);
+}
+function show(id) { document.getElementById('boot')?.remove(); ['setup','login','app'].forEach(x => $('#'+x).classList.toggle('hidden', x !== id)); }
+
+
+init().catch(e => {
+  console.error(e);
+  document.body.insertAdjacentHTML('afterbegin', '<div class="notice" style="margin:24px">Could not start: ' + esc(e && e.message || e) + '</div>');
+});
+async function init() {
+  step('Starting… (2/4)');
+  if (typeof supabase === 'undefined') throw new Error('The Supabase library did not load. Check your internet connection and reload.');
+  document.querySelectorAll('.church').forEach(e => e.textContent = CFG.churchName);
+  $('#markA').innerHTML = $('#markB').innerHTML = svg('cross', 18);
+  if (!CFG.url || !CFG.anonKey) return show('setup');
+
+  // Apps Script runs the page in a sandboxed frame: skip the Web Locks API (it can hang there)
+  // and fall back to in-memory storage if the frame blocks localStorage.
+  let storage;
+  try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); storage = localStorage; }
+  catch (e) { const mem = {}; storage = { getItem: k => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; }, removeItem: k => { delete mem[k]; } }; }
+  sb = supabase.createClient(CFG.url, CFG.anonKey, {auth:{flowType:'pkce', persistSession:true, detectSessionInUrl:false,
+    storage, lock: async (_name, _timeout, fn) => await fn()}});
+  step('Connecting… (3/4)');
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timed out')), ms))]);
+  if (CFG.authError) toast(CFG.authError, 'bad');
+  if (CFG.authCode) {
+    const {error} = await withTimeout(sb.auth.exchangeCodeForSession(CFG.authCode), 15000).catch(e => ({error: e}));
+    if (error) toast('Sign-in failed: ' + error.message, 'bad');
+    history.replaceState(null, '', location.pathname);
+  }
+  step('Checking sign-in… (4/4)');
+  const session = await withTimeout(sb.auth.getSession(), 8000).then(r => r.data.session).catch(() => null);
+  session ? enter(session) : show('login');
+  sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT') show('login'); });
+
+  $('#btnGoogle').onclick = signIn;
+  $('#btnOut').onclick = async () => { await sb.auth.signOut(); show('login'); };
+}
+
+// Sign-in without redirects or secrets: Apps Script (running as the visitor) asks Google for a
+// signed identity token for the visitor; Supabase verifies it against the allowed Google client IDs.
+async function signIn() {
+  const btn = $('#btnGoogle'); btn.disabled = true;
+  try {
+    // Standard Google sign-in: Google sends the user back here with ?code=..., handled at startup.
+    const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+    if (error) throw error;
+  } catch (e) {
+    toast('Sign-in failed: ' + ((e && e.message) || e), 'bad');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function enter(session) {
+  me = session.user;
+  const md = me.user_metadata || {};
+  $('#uName').textContent = md.full_name || md.name || 'Signed in';
+  $('#uMail').textContent = me.email || '';
+  $('#uAvatar').innerHTML = md.avatar_url ? `<img src="${esc(md.avatar_url)}" alt="">` : esc((me.email||'?')[0].toUpperCase());
+  $('#nav').innerHTML = PAGES.map(p => `<button class="nav" data-p="${p.id}">${svg(p.id)}${p.label}</button>`).join('');
+  $('#nav').onclick = e => { const b = e.target.closest('[data-p]'); if (b) go(b.dataset.p); };
+  show('app');
+  churchId = null; myChurch().catch(() => {});
+  call('list', {resource:'funds', limit:500}).then(r => funds = r || []).catch(() => {});
+  loadLookups();
+  go('dashboard');
+}
+
+// Data layer: the page talks to Supabase directly as the signed-in user, so Row Level Security
+// decides what each person can see and change. (Replaces the old Apps Script backend in Code.gs.)
+const DATA_RES = {
+  income:  { table: 'income_transactions',  order: 'transaction_date.desc', writable: true },
+  expense: { table: 'expense_transactions', order: 'transaction_date.desc', writable: true },
+  funds:   { table: 'funds',                order: 'name.asc',              writable: true },
+  budget:  { table: 'budgets',              order: 'period_start.desc',     writable: true },
+  reports: { table: 'v_monthly_summary',    order: 'month.desc',            writable: false },
+  audit:   { table: 'audit_logs',           order: 'created_at.desc',       writable: false },
+  // Dropdown lists: read-only, active items only, in list order
+  income_categories:  { table: 'income_categories',  order: 'sort_order.asc', writable: false, activeOnly: true },
+  expense_categories: { table: 'expense_categories', order: 'sort_order.asc', writable: false, activeOnly: true },
+  payment_methods:    { table: 'payment_methods',    order: 'sort_order.asc', writable: false, activeOnly: true }
+};
+const sbData = res => {
+  if (res.error) throw new Error(res.error.message || res.error.hint || 'Supabase error');
+  return res.data;
+};
+const round2 = n => Math.round(n * 100) / 100;
+
+async function listRows(resource, limit) {
+  const r = DATA_RES[resource];
+  if (!r) throw new Error('Unknown section: ' + resource);
+  const n = Math.min(Math.max(parseInt(limit, 10) || 200, 1), 1000);
+  const build = withOrder => {
+    let q = sb.from(r.table).select('*').limit(n);
+    if (r.activeOnly) q = q.eq('is_active', true);
+    if (withOrder && r.order) { const p = r.order.split('.'); q = q.order(p[0], { ascending: p[1] !== 'desc' }); }
+    return q;
+  };
+  let res = await build(true);
+  if (res.error && r.order) res = await build(false);   // order column missing: retry unsorted
+  return sbData(res) || [];
+}
+
+async function createRow(resource, record) {
+  const r = DATA_RES[resource];
+  if (!r) throw new Error('Unknown section: ' + resource);
+  if (!r.writable) throw new Error('This section is read-only.');
+  const clean = {};
+  Object.keys(record || {}).forEach(k => {
+    if (/^[a-z_][a-z0-9_]*$/.test(k) && record[k] !== '' && record[k] != null) clean[k] = record[k];
+  });
+  const rows = sbData(await sb.from(r.table).insert(clean).select());
+  return rows && rows[0];   // audit entries are written by database triggers
+}
+
+// Dashboard: the database summary, plus USD and KHR kept separate (amounts as entered, no conversion).
+async function dashboardData() {
+  const d = sbData(await sb.rpc('get_dashboard_summary')) || {};
+  try {
+    const sel = 'fund_id,currency,amount,transaction_date';
+    const both = await Promise.all([
+      sb.from('income_transactions').select(sel).limit(10000),
+      sb.from('expense_transactions').select(sel).limit(10000)
+    ]);
+    const inc = sbData(both[0]) || [], exp = sbData(both[1]) || [];
+    const flows = {}, months = {};
+    const tally = (rows, sign, key) => rows.forEach(r => {
+      const cur = r.currency || 'USD', a = Number(r.amount) || 0;
+      if (r.fund_id) { const fl = flows[r.fund_id] || (flows[r.fund_id] = {}); fl[cur] = (fl[cur] || 0) + sign * a; }
+      const mo = String(r.transaction_date || '').slice(0, 7);
+      const mm = months[mo] || (months[mo] = {});
+      const cc = mm[cur] || (mm[cur] = { income: 0, expense: 0 });
+      cc[key] = round2(cc[key] + a);
+    });
+    tally(inc, 1, 'income'); tally(exp, -1, 'expense');
+    const totals = { USD: 0, KHR: 0 };
+    (d.funds || []).forEach(f => {
+      const own = f.currency || 'USD', fl = flows[f.id] || {}, b = {};
+      b[own] = Number(f.balance) || 0;
+      Object.keys(fl).forEach(cur => { if (cur === own) return; b[cur] = round2(fl[cur]); b[own] -= fl[cur]; });
+      b[own] = round2(b[own]);
+      f.balances = b;
+      Object.keys(b).forEach(cur => { totals[cur] = round2((totals[cur] || 0) + b[cur]); });
+    });
+    d.fund_totals = totals;
+    (d.trend || []).forEach(t => {
+      const mm = months[t.month] || {};
+      t.by_currency = { USD: mm.USD || { income: 0, expense: 0 }, KHR: mm.KHR || { income: 0, expense: 0 } };
+    });
+  } catch (e) { (d.warnings = d.warnings || []).push('USD/KHR breakdown: ' + e.message); }
+  return d;
+}
+
+async function call(action, payload = {}) {
+  const {data:{session}} = await sb.auth.getSession();
+  if (!session) { show('login'); throw new Error('Please sign in.'); }
+  switch (action) {
+    case 'me':        return { id: session.user.id, email: session.user.email };
+    case 'dashboard': return dashboardData();
+    case 'list':      return listRows(payload.resource, payload.limit);
+    case 'create':    return createRow(payload.resource, payload.record);
+    default: throw new Error('Unknown action: ' + action);
+  }
+}
+
+
+function go(id) {
+  current = id;
+  const p = PAGES.find(x => x.id === id);
+  $('#title').textContent = p.label; $('#crumb').textContent = p.crumb;
+  document.querySelectorAll('#nav .nav').forEach(b => b.classList.toggle('on', b.dataset.p === id));
+  if (id === 'dashboard') return renderDashboard();
+  if (id === 'documents') return renderDocuments();
+  renderList(id);
+}
+
+
+/* ------------------------------------------------------------ code dictionary */
+// Codes and "when to use" tips for every category, matched to your Supabase categories by name.
+// A code or description saved on the category in Supabase overrides what is written here.
+const CODE_DICT = {
+  income: [
+    ['I-01', ['Tithe', 'Tithes'], 'Regular tithe (one-tenth of income) given by members.', 'Weekly or monthly tithe envelopes'],
+    ['I-02', ['Sunday Offering', 'Sunday Offerings'], 'Open offering collected during the Sunday service.', 'Offering bag or box total after service'],
+    ['I-03', ['Special Offering', 'Special Offerings'], 'One-off offering announced for a stated purpose.', 'Christmas, Easter or thanksgiving offering'],
+    ['I-04', ['Love Gift Offering'], 'Love offering collected for a guest speaker, pastor or a person in need.', 'Gift for a visiting preacher'],
+    ['I-05', ['Mission', 'Mission Giving'], 'Gifts given specifically for missions and outreach.', 'Monthly mission pledge'],
+    ['I-06', ['Building Fund', 'Building Fund Giving'], 'Gifts for land, building, construction or major renovation.', 'Roof or new hall project gift'],
+    ['I-07', ['Benevolence Donations'], 'Gifts to help members or neighbours in need.', 'Food, medical or funeral support collection'],
+    ['I-08', ['Youth Ministry Donations'], 'Gifts marked for the youth ministry.', 'Youth camp sponsorship'],
+    ['I-09', ['Children Ministry Donations'], 'Gifts marked for the children ministry.', 'Sunday school materials gift'],
+    ['I-10', ['Worship Ministry Donations'], 'Gifts marked for the worship team.', 'Gift toward a new keyboard'],
+    ['I-11', ['Event Contributions'], 'Fees or contributions paid for a church event.', 'Retreat, camp or conference registration'],
+    ['I-12', ['Member Contributions'], 'Other member giving that is not tithe or offering.', 'Monthly pledge or membership contribution'],
+    ['I-13', ['External Donations'], 'Gifts from people or organisations outside the church.', 'Partner church, NGO or overseas donor'],
+    ['I-99', ['Other Income'], 'Income that fits no other category. Explain it in Description.', 'Bank interest, sale of used items']
+  ],
+  payment: [
+    ['P-01', ['Cash'], 'Paid or received in cash. Keep the receipt or count sheet.', 'Offering cash count'],
+    ['P-02', ['Bank Transfer'], 'Direct transfer between bank accounts.', 'Wire or account-to-account transfer'],
+    ['P-03', ['ABA / KHQR'], 'ABA app transfer or KHQR scan.', 'Member pays by scanning the church KHQR'],
+    ['P-04', ['QR payment'], 'Other QR code payments.', 'Wing, ACLEDA or other bank QR'],
+    ['P-05', ['Cheque'], 'Paid or received by cheque. Note the cheque number in Description.', 'Cheque from a partner'],
+    ['P-99', ['Other'], 'Any other method. Explain in Description.', 'Mobile money, in-kind']
+  ],
+  expense: [
+    ['E-01', ['Ministry & Programs'], 'General ministry and program costs not covered by a more specific ministry code.', 'Materials for a church-wide program'],
+    ['E-02', ['Worship & Music'], 'General worship and music costs.', 'Song books, sheet music'],
+    ['E-03', ['Missions & Outreach'], 'Outreach activities run by the church.', 'Community outreach day'],
+    ['E-04', ['Staff & Honoraria'], 'Honoraria and allowances for staff or guest speakers.', 'Guest preacher honorarium'],
+    ['E-05', ['Utilities'], 'Utility bills not split into water or electricity.', 'Combined utility bill'],
+    ['E-06', ['Rent & Facilities'], 'Rent and general facility costs.', 'Monthly building rent'],
+    ['E-07', ['Office & Supplies'], 'Office items and consumables.', 'Paper, ink, stationery'],
+    ['E-08', ['Benevolence'], 'Help given to members or neighbours in need.', 'Rice support, hospital bill help'],
+    ['E-10', ['Administration'], 'Running the church office and records.', 'Printing, filing, admin services'],
+    ['E-11', ['Pastor and Staff Support'], 'Regular support, salary or allowance for pastors and staff.', 'Monthly pastor support'],
+    ['E-12', ['Church Facilities'], 'Facility costs other than repairs or utilities.', 'Cleaning service, security'],
+    ['E-13', ['Utilities - Water'], 'Water bill.', 'Monthly water bill'],
+    ['E-14', ['Utilities - Electricity'], 'Electricity bill.', 'Monthly EDC bill'],
+    ['E-15', ['Dom Ministry'], 'Costs of the Dom ministry. Describe the activity in Description.', 'Ministry materials or activity costs'],
+    ['E-16', ['Worship Ministry'], 'Worship team activities and needs.', 'Rehearsal snacks, worship training'],
+    ['E-17', ['Media and Technical'], 'Sound, projection, livestream and media costs.', 'Cables, microphones, streaming subscription'],
+    ['E-18', ['Musician Support'], 'Support or allowance given to musicians.', 'Transport allowance for musicians'],
+    ['E-19', ['Children Ministry'], 'Sunday school and children activities.', 'Crafts, snacks, teaching materials'],
+    ['E-20', ['Youth Ministry'], 'Youth activities and events.', 'Youth night, youth camp costs'],
+    ['E-21', ['Small Groups'], 'Cell or small group costs.', 'Bible study materials, group snacks'],
+    ['E-22', ['Evangelism'], 'Sharing the gospel locally.', 'Tracts, evangelism event costs'],
+    ['E-23', ['Mission Support'], 'Money sent to support missionaries or mission partners.', 'Monthly gift to a missionary'],
+    ['E-25', ['Church Events'], 'Special church events and celebrations.', 'Christmas or anniversary celebration'],
+    ['E-26', ['Conferences and Retreats'], 'Attending or hosting conferences and retreats.', 'Retreat venue, conference fees'],
+    ['E-27', ['Transportation'], 'Travel and transport for church work.', 'Tuk-tuk, fuel, bus rental'],
+    ['E-28', ['Hospitality'], 'Food and drinks for guests and fellowship.', 'Fellowship lunch, guest meals'],
+    ['E-29', ['Communication'], 'Phone, internet and messaging.', 'Internet bill, phone top-up'],
+    ['E-30', ['Equipment'], 'Buying new equipment that lasts.', 'New keyboard, projector, chairs'],
+    ['E-31', ['Repairs and Maintenance'], 'Fixing and maintaining the building or equipment.', 'Roof repair, aircon service'],
+    ['E-32', ['Bank and Payment Fees'], 'Bank charges and payment fees.', 'Transfer fee, ABA fee'],
+    ['E-33', ['Training and Development'], 'Training for leaders, staff and volunteers.', 'Leadership course fee'],
+    ['E-34', ['Emergency Expenses'], 'Unplanned urgent costs. Explain in Description.', 'Storm damage, urgent medical need'],
+    ['E-99', ['Other Expense', 'Other Expenses'], 'Expense that fits no other category. Explain in Description.', 'One-off item with no matching code']
+  ]
+};
+const normName = s => String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim().replace(/s\b/g, '');
+const dictEntry = (kind, row) => {
+  const n = normName(row && row.name);
+  const hit = (CODE_DICT[kind] || []).find(e => e[1].some(x => normName(x) === n));
+  return { code: (row && row.code) || (hit ? hit[0] : ''), tip: (row && row.description) || (hit ? hit[2] : ''), eg: hit ? hit[3] : '' };
+};
+const catKind = src => src === 'income_categories' ? 'income' : src === 'expense_categories' ? 'expense' : src === 'payment_methods' ? 'payment' : '';
+const catLabel = (src, v) => {
+  const row = (lookups[src] || []).find(x => x.id === v);
+  if (!row) return v;
+  const de = dictEntry(catKind(src), row);
+  return (de.code ? de.code + ' · ' : '') + row.name;
+};
+const TXNO_HELP = '<div class="dict-txno"><p>Every income and expense gets a number automatically when you save it.</p>' +
+  '<p class="dict-big"><span class="txno">INC-202611-0001</span> Income transaction</p>' +
+  '<p class="dict-big"><span class="txno">EXP-202611-0001</span> Expense transaction</p>' +
+  '<table class="fund-tbl"><thead><tr><th>Part</th><th>Meaning</th></tr></thead><tbody>' +
+  '<tr><td><span class="txno">INC</span></td><td>Income</td></tr>' +
+  '<tr><td><span class="txno">EXP</span></td><td>Expense</td></tr>' +
+  '<tr><td><span class="txno">202611</span></td><td>Year and month of the transaction date (YYYYMM). Here: November 2026.</td></tr>' +
+  '<tr><td><span class="txno">0001</span></td><td>Running number for that type and month. Starts again at 0001 each month.</td></tr>' +
+  '</tbody></table><p class="muted" style="margin-top:10px">Format: TYPE – YYYYMM – SEQUENCE. Quote this number when you check, correct or reverse a transaction.</p></div>';
+
+async function openDictionary(kind) {
+  if (!(lookups.income_categories || []).length || !(lookups.expense_categories || []).length) { try { await loadLookups(); } catch (e) {} }
+  let root = document.getElementById('dictRoot');
+  if (!root) { root = document.createElement('div'); root.id = 'dictRoot'; document.body.appendChild(root); }
+  const tabs = [['txno', 'Transaction No.'], ['income', 'Income codes'], ['expense', 'Expense codes'], ['payment', 'Payment methods']];
+  let tab = tabs.some(x => x[0] === kind) ? kind : 'income';
+  const rowsFor = k => (lookups[k === 'payment' ? 'payment_methods' : k + '_categories'] || [])
+    .map(x => Object.assign({ name: x.name }, dictEntry(k, x)))
+    .sort((a, b) => (a.code || 'Z').localeCompare(b.code || 'Z'));
+  const body = (k, q) => {
+    if (k === 'txno') return TXNO_HELP;
+    const rows = rowsFor(k).filter(r => !q || (r.code + ' ' + r.name + ' ' + r.tip + ' ' + r.eg).toLowerCase().includes(q));
+    if (!rows.length) return '<div class="empty">No matching items.</div>';
+    return '<table class="fund-tbl dict-tbl"><thead><tr><th>Code</th><th>' + (k === 'payment' ? 'Method' : 'Category') + '</th><th>When to use</th></tr></thead><tbody>' +
+      rows.map(r => '<tr><td>' + (r.code ? '<span class="txno">' + esc(r.code) + '</span>' : '<span class="muted">—</span>') + '</td>' +
+        '<td><b>' + esc(r.name) + '</b></td><td>' + (r.tip ? esc(r.tip) : '<span class="muted">No tip yet.</span>') +
+        (r.eg ? '<div class="muted" style="font-size:12px;margin-top:2px">e.g. ' + esc(r.eg) + '</div>' : '') + '</td></tr>').join('') +
+      '</tbody></table>';
+  };
+  const close = () => { root.innerHTML = ''; };
+  const draw = () => {
+    root.innerHTML = '<div class="modal-bg" id="dictBg"><div class="modal dict-modal">' +
+      '<div class="card-h"><h3>Code dictionary</h3><button class="btn sm" id="dictX">✕</button></div>' +
+      '<div class="dict-tabs">' + tabs.map(x => '<button class="' + (x[0] === tab ? 'on' : '') + '" data-t="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' +
+      (tab === 'txno' ? '' : '<input class="search" id="dictQ" placeholder="Search code, name or tip…">') +
+      '<div class="dict-body" id="dictBody">' + body(tab, '') + '</div></div></div>';
+    root.querySelector('#dictX').onclick = close;
+    root.querySelector('#dictBg').onclick = e => { if (e.target.id === 'dictBg') close(); };
+    root.querySelectorAll('.dict-tabs button').forEach(b => { b.onclick = () => { tab = b.dataset.t; draw(); }; });
+    const qi = root.querySelector('#dictQ');
+    if (qi) qi.oninput = () => { root.querySelector('#dictBody').innerHTML = body(tab, qi.value.trim().toLowerCase()); };
+  };
+  draw();
+}
+
+function trendCur(btn) {
+  document.querySelectorAll('#trendCur button').forEach(b => b.classList.toggle('on', b === btn));
+  const box = document.getElementById('trendBox');
+  if (box && window._chartFor) box.innerHTML = window._chartFor(btn.dataset.c);
+}
+
+async function renderDashboard() {
+  const v = $('#view');
+  v.innerHTML = `<div class="grid kpis">${'<div class="skeleton"></div>'.repeat(4)}</div>`;
+  let d;
+  try { d = await call('dashboard'); }
+  catch (e) { v.innerHTML = `<div class="notice">${esc(e.message)}</div>`; return; }
+  if (current !== 'dashboard') return;
+
+  const inc = d.income || {}, exp = d.expense || {};
+  const net = {}; ['USD','KHR'].forEach(c => net[c] = (inc[c]||0) - (exp[c]||0));
+  const fundTotal = d.fund_totals || {}; if (!d.fund_totals) (d.funds||[]).forEach(f => fundTotal[f.currency] = (fundTotal[f.currency]||0) + f.balance);
+  const kpi = (cls, lbl, o) => `<div class="card kpi ${cls}"><div class="lbl">${lbl}</div>
+      <div class="cur-row"><span class="cur usd">USD</span><span class="val">${money(o.USD||0,'USD')}</span></div>
+      <div class="cur-row"><span class="cur khr">KHR</span><span class="val">${money(o.KHR||0,'KHR')}</span></div></div>`;
+  const label = d.month ? new Date(d.month+'-01T00:00:00').toLocaleString('en-US',{month:'long',year:'numeric'}) : 'This month';
+
+  const trend = d.trend || [];
+  const chartFor = cur => {
+    const pts = trend.map(t => { const b = t.by_currency && t.by_currency[cur];
+      return { month: t.month, income: b ? b.income : (cur === 'USD' ? t.income : 0), expense: b ? b.expense : (cur === 'USD' ? t.expense : 0) }; });
+    const max = Math.max(1, ...pts.flatMap(t => [t.income, t.expense]));
+    return pts.length ? `<div class="chart">${pts.map(t => `
+      <div class="m" title="${esc(t.month)}: in ${money(t.income,cur)} / out ${money(t.expense,cur)}">
+      <div class="bars"><i class="a" style="height:${t.income/max*100}%"></i><i class="b" style="height:${t.expense/max*100}%"></i></div>
+      <span>${monthName(t.month)}</span></div>`).join('')}</div>` : '<div class="empty">No trend data yet.</div>';
+  };
+  window._chartFor = chartFor;
+  const chart = chartFor('USD');
+
+  const recent = (d.recent||[]).length ? `<table><thead><tr><th>Date</th><th>Transaction No.</th><th>Type</th><th>Description</th><th class="num">Amount</th></tr></thead><tbody>
+      ${d.recent.map(r => `<tr><td>${esc(r.date)}</td><td>${r.transaction_no ? `<span class="txno">${esc(r.transaction_no)}</span>` : '<span class="muted">—</span>'}</td><td><span class="tag ${r.type}">${r.type}</span></td>
+      <td>${esc(r.description)||'<span class="muted">—</span>'}</td><td class="num">${money(r.amount, r.currency)}</td></tr>`).join('')}
+      </tbody></table>` : '<div class="empty">No transactions yet. Record your first income or expense.</div>';
+
+  const budgets = (d.budgets||[]).length ? d.budgets.map(b => {
+      const pct = b.amount ? Math.round(b.spent / b.amount * 100) : 0;
+      return `<div class="list-item"><div class="row"><b>${esc(b.name)}</b><span class="muted">${pct}%</span></div>
+        <div class="bar"><i class="${pct>100?'over':''}" style="width:${Math.min(pct,100)}%"></i></div>
+        <div class="row muted" style="font-size:12px;margin-top:4px"><span>${money(b.spent,b.currency)} spent</span><span>of ${money(b.amount,b.currency)}</span></div></div>`;
+    }).join('') : '<div class="empty">No budgets set.</div>';
+
+  const fb = f => f.balances || {[f.currency || 'USD']: f.balance};
+  const amt2 = (b, c) => b[c] != null ? money(b[c], c) : '<span class="muted">—</span>';
+  const fundsHtml = (d.funds||[]).length ? `<table class="fund-tbl"><thead><tr><th>Fund</th><th class="num"><span class="cur usd">USD</span></th><th class="num"><span class="cur khr">KHR</span></th></tr></thead><tbody>
+    ${d.funds.map(f => { const b = fb(f); return `<tr><td>${esc(f.name)}</td><td class="num">${amt2(b,'USD')}</td><td class="num khr">${amt2(b,'KHR')}</td></tr>`; }).join('')}
+    </tbody><tfoot><tr><td>Total</td><td class="num">${money(fundTotal.USD||0,'USD')}</td><td class="num khr">${money(fundTotal.KHR||0,'KHR')}</td></tr></tfoot></table>`
+    : '<div class="empty">No funds yet.</div>';
+
+  v.innerHTML = `
+    ${(d.warnings||[]).length ? `<div class="notice">Some data could not be loaded: ${esc(d.warnings.join(' · '))}</div>` : ''}
+    <div class="toolbar"><span class="muted">${esc(label)}</span><div class="grow"></div>
+      <button class="btn" onclick="openDictionary('txno')">Code dictionary</button>
+<button class="btn" onclick="openForm('expense')">${svg('expense',16)} Expense</button>
+      <button class="btn primary" onclick="openForm('income')">${svg('income',16)} Income</button></div>
+    <div class="grid kpis">${kpi('inc','Income this month',inc)}${kpi('exp','Expenses this month',exp)}${kpi('','Net this month',net)}${kpi('','Total fund balance',fundTotal)}</div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card"><div class="card-h"><h3>Income vs expenses</h3><div class="seg" id="trendCur"><button class="on" data-c="USD" onclick="trendCur(this)">USD</button><button data-c="KHR" onclick="trendCur(this)">KHR</button></div><div class="legend"><span><i style="background:var(--ok)"></i>Income</span><span><i style="background:var(--bad)"></i>Expenses</span></div></div><div class="card-b"><div id="trendBox">${chart}</div></div></div>
+      <div class="card"><div class="card-h"><h3>Fund balances</h3><button class="btn sm" onclick="go('funds')">View</button></div><div class="card-b">${fundsHtml}</div></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card"><div class="card-h"><h3>Recent transactions</h3><button class="btn sm" onclick="go('income')">All</button></div><div class="tbl-wrap">${recent}</div></div>
+      <div class="card"><div class="card-h"><h3>Budget usage</h3><button class="btn sm" onclick="go('budget')">View</button></div><div class="card-b">${budgets}</div></div>
+    </div>`;
+}
+
+
+async function renderList(resource) {
+  const v = $('#view');
+  v.innerHTML = '<div class="skeleton"></div>';
+  let rows;
+  try { rows = await call('list', {resource, limit:500}); }
+  catch (e) { v.innerHTML = `<div class="notice">${esc(e.message)}</div>`; return; }
+  if (current !== resource) return;
+  rowsCache = rows || [];
+  v.innerHTML = `<div class="toolbar">
+      <input class="search" id="q" placeholder="Search…">
+      <span class="muted" id="count"></span><div class="grow"></div>
+      ${resource === 'income' || resource === 'expense' ? '<button class="btn" onclick="openDictionary(\'' + resource + '\')">Code dictionary</button>' : ''}
+<button class="btn" onclick="exportCsv('${resource}')">Export CSV</button>
+      ${FORMS[resource] ? `<button class="btn primary" onclick="openForm('${resource}')">+ ${esc(FORMS[resource].title)}</button>` : ''}
+    </div><div class="card"><div class="tbl-wrap" id="tbl"></div></div>`;
+  $('#q').oninput = () => drawTable();
+  drawTable();
+}
+
+function drawTable() {
+  const q = ($('#q')?.value || '').toLowerCase();
+  const rows = rowsCache.filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
+  $('#count').textContent = rows.length + ' record' + (rows.length === 1 ? '' : 's');
+  if (!rows.length) { $('#tbl').innerHTML = '<div class="empty">No records found.</div>'; return; }
+  const hide = /^(id|church_id|created_by|updated_at|user_id)$/;
+  const TX_ORDER = ['transaction_no','transaction_date','amount','currency','category_id','payment_method_id','fund_id','description','status','receipt_path'];
+  const keys = Object.keys(rowsCache[0]).filter(c => !hide.test(c));
+  const cols = (current === 'income' || current === 'expense') && keys.includes('transaction_no')
+    ? TX_ORDER.filter(c => keys.includes(c)).slice(0, 9)
+    : keys.slice(0, 8);
+  const fundName = id => (funds.find(f => f.id === id) || {}).name;
+  const lookupName = (src, id) => ((lookups[src] || []).find(x => x.id === id) || {}).name;
+  const cell = (c, v, r) => {
+    if (v == null || v === '') return '<span class="muted">—</span>';
+    if (c === 'transaction_no') return `<span class="txno">${esc(v)}</span>`;
+    if (c === 'receipt_path') return `<button class="btn sm" data-receipt="${esc(v)}">View</button>`;
+    if (c === 'fund_id') return esc(fundName(v) || v);
+    if (c === 'category_id' && current === 'income') return esc(catLabel('income_categories', v));
+    if (c === 'category_id' && current === 'expense') return esc(catLabel('expense_categories', v));
+    if (c === 'payment_method_id') return esc(lookupName('payment_methods', v) || v);
+    if (/amount|balance|total|spent/.test(c) && !isNaN(v)) return money(v, r.currency);
+    if (typeof v === 'object') return esc(JSON.stringify(v)).slice(0, 80);
+    if (/(_at|date)$/.test(c)) return esc(String(v).slice(0, 16).replace('T', ' '));
+    return esc(String(v).slice(0, 80));
+  };
+  const isNum = c => /amount|balance|total|spent/.test(c);
+  $('#tbl').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="${isNum(c)?'num':''}">${c === 'transaction_no' ? 'Transaction No.' : esc(c.replace(/_/g,' '))}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${cols.map(c => `<td class="${isNum(c)?'num':''}">${cell(c, r[c], r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function exportCsv(name) {
+  if (!rowsCache.length) return toast('Nothing to export.');
+  const cols = Object.keys(rowsCache[0]);
+  // Quote every cell; prefix text that Excel/Sheets would run as a formula.
+  const q = v => { let s = String(v == null ? '' : (typeof v === 'object' ? JSON.stringify(v) : v));
+    if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"'; };
+  const csv = [cols.join(',')].concat(rowsCache.map(r => cols.map(c => q(r[c])).join(','))).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = `${name}-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+
+async function openForm(resource) {
+  const f = FORMS[resource];
+  if (f.fields.some(fd => fd.type === 'ref' && !(lookups[fd.source] || []).length)) await loadLookups();
+  const today = new Date().toISOString().slice(0, 10);
+  const input = fd => {
+    const req = fd.required ? 'required' : '';
+    if (fd.type === 'txno') return `<input name="${fd.name}" class="txno-preview" readonly value="${fd.prefix}-${String(today).slice(0,7).replace('-','')}-####" title="Assigned automatically when you save"><div class="hint">Assigned automatically on save. Format: TYPE-YYYYMM-SEQUENCE — ${fd.prefix} = ${fd.prefix === 'INC' ? 'Income' : 'Expense'}, YYYYMM = month, 0001 = running number for that type and month.</div>`;
+    if (fd.type === 'select') return `<select name="${fd.name}">${fd.options.map(o => `<option>${o}</option>`).join('')}</select>`;
+    if (fd.type === 'ref') { const k = catKind(fd.source);
+      return '<select name="' + fd.name + '" ' + req + ' data-kind="' + k + '"><option value="">— Select —</option>' + (lookups[fd.source] || []).map(x => { const de = dictEntry(k, x); return '<option value="' + esc(x.id) + '" title="' + esc(de.tip) + '">' + esc((de.code ? de.code + ' · ' : '') + x.name) + '</option>'; }).join('') + '</select>' + (k === 'income' || k === 'expense' ? '<div class="hint cat-tip">Pick a category to see when to use it. <a href="#" onclick="openDictionary(\'' + k + '\');return false">Open code dictionary</a></div>' : ''); }
+    if (fd.type === 'fund') return `<select name="${fd.name}"><option value="">— None —</option>${funds.map(x => `<option value="${esc(x.id)}" data-cur="${esc(x.currency || 'USD')}">${esc(x.name)} (${esc(x.currency || 'USD')})</option>`).join('')}</select>`;
+    if (fd.type === 'file') return `<input type="file" name="${fd.name}" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf">`;
+    return `<input type="${fd.type}" name="${fd.name}" ${fd.step?`step="${fd.step}"`:''} ${req} ${fd.type==='date'?`value="${today}"`:''}>`;
+  };
+  $('#modalRoot').innerHTML = `<div class="modal-bg" id="mbg"><div class="modal">
+    <div class="card-h"><h3>${esc(f.title)}</h3><button class="btn sm" id="mx">✕</button></div>
+    <form id="frm">${f.fields.map(fd => `<div class="field"><label>${esc(fd.label)}</label>${input(fd)}</div>`).join('')}
+      <div class="actions"><button type="button" class="btn" id="mc">Cancel</button><button class="btn primary" id="ms">Save</button></div></form></div></div>`;
+  const close = () => $('#modalRoot').innerHTML = '';
+  $('#mx').onclick = $('#mc').onclick = close;
+  $('#mbg').onclick = e => { if (e.target.id === 'mbg') close(); };
+  const catSel = $('#frm').elements['category_id'], catTip = $('#frm').querySelector('.cat-tip');
+  if (catSel && catTip) catSel.addEventListener('change', () => {
+    const k = catSel.dataset.kind, row = (lookups[k + '_categories'] || []).find(x => x.id === catSel.value);
+    const de = row ? dictEntry(k, row) : null;
+    catTip.innerHTML = (de && de.tip ? '<b>' + esc(de.code) + '</b> ' + esc(de.tip) + (de.eg ? ' <span class="muted">e.g. ' + esc(de.eg) + '</span>' : '') + ' · ' : '') + '<a href="#" onclick="openDictionary(\'' + k + '\');return false">Open code dictionary</a>';
+  });
+  const txp = $('#frm').querySelector('.txno-preview'), txd = $('#frm').elements['transaction_date'];
+  if (txp && txd) txd.addEventListener('change', () => { txp.value = txp.value.split('-')[0] + '-' + txd.value.slice(0,7).replace('-','') + '-####'; });
+  $('#frm').onsubmit = async e => {
+    e.preventDefault();
+    const btn = $('#ms'); btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const record = {};
+      for (const fd of f.fields) {
+        if (fd.type === 'txno') continue;   // generated by the database
+        const el = e.target.elements[fd.name];
+        if (fd.type === 'file') { if (el.files[0]) record[fd.name] = await uploadFile(el.files[0], resource); }
+        else if (el.value !== '') record[fd.name] = fd.type === 'number' ? Number(el.value) : el.value;
+      }
+      const saved = await call('create', {resource, record});
+      close(); toast(saved && saved.transaction_no ? 'Saved as ' + saved.transaction_no : 'Saved.', 'ok');
+      if (resource === 'funds') funds = await call('list', {resource:'funds', limit:500});
+      go(current);
+    } catch (err) { toast(err.message, 'bad'); btn.disabled = false; btn.textContent = 'Save'; }
+  };
+}
+
+
+document.addEventListener('click', e => { const b = e.target.closest('[data-receipt]'); if (b) openReceipt(b.dataset.receipt); });
+async function myChurch() {
+  if (!churchId) { const {data} = await sb.rpc('current_church_id'); churchId = data; }
+  if (!churchId) throw new Error('You are not a member of any church yet. Ask an admin to add you.');
+  return churchId;
+}
+
+// Storage paths start with the church id; storage policies use it to decide access.
+async function uploadFile(file, folder) {
+  if (file.size > 10 * 1024 * 1024) throw new Error('File is larger than 10 MB.');
+  const church = await myChurch();
+  const d = new Date(), safe = file.name.replace(/[^\w.\-]+/g, '_');
+  const path = `${church}/${folder}/${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${Date.now()}-${safe}`;
+  const {error} = await sb.storage.from(CFG.bucket).upload(path, file, {contentType:file.type, upsert:false});
+  if (error) throw new Error('Upload failed: ' + error.message);
+  return path;
+}
+
+async function openReceipt(path) {
+  const {data, error} = await sb.storage.from(CFG.bucket).createSignedUrl(path, 120);
+  if (error) return toast(error.message, 'bad');
+  window.open(data.signedUrl, '_blank');
+}
+
+async function renderDocuments() {
+  const v = $('#view');
+  v.innerHTML = `<div class="card card-b" style="margin-bottom:16px">
+      <div class="drop" id="drop">${svg('documents',28)}<div style="margin-top:8px"><b>Drop receipts or financial documents here</b><br>or click to choose files (PDF or images, max 10 MB)</div>
+      <input type="file" id="pick" multiple accept="image/jpeg,image/png,image/webp,image/heic,application/pdf" class="hidden"></div></div>
+    <div class="card"><div class="card-h"><h3>Documents</h3><span class="muted" id="dcount"></span></div><div class="tbl-wrap" id="dlist"><div class="skeleton"></div></div></div>`;
+  const drop = $('#drop'), pick = $('#pick');
+  const send = async files => {
+    for (const f of files) { try { await uploadFile(f, 'documents'); toast('Uploaded ' + f.name, 'ok'); } catch (e) { toast(e.message, 'bad'); } }
+    listDocs();
+  };
+  drop.onclick = () => pick.click();
+  pick.onchange = () => send([...pick.files]);
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); send([...e.dataTransfer.files]); };
+  listDocs();
+}
+
+async function listDocs() {
+  const out = [];
+  const walk = async (prefix, depth) => {
+    const {data, error} = await sb.storage.from(CFG.bucket).list(prefix, {limit:200, sortBy:{column:'created_at', order:'desc'}});
+    if (error) throw error;
+    for (const o of data || []) {
+      const p = prefix ? prefix + '/' + o.name : o.name;
+      if (o.id) out.push({path:p, name:o.name.replace(/^\d+-/, ''), size:o.metadata?.size, at:o.created_at});
+      else if (depth < 3) await walk(p, depth + 1);
+    }
+  };
+  try {
+    const church = await myChurch();
+    for (const top of ['documents','income','expense']) await walk(church + '/' + top, 0);
+  } catch (e) { $('#dlist').innerHTML = `<div class="notice" style="margin:12px">${esc(e.message)}</div>`; return; }
+  if (current !== 'documents') return;
+  out.sort((a, b) => (a.at < b.at ? 1 : -1));
+  $('#dcount').textContent = out.length + ' files';
+  $('#dlist').innerHTML = out.length ? `<table><thead><tr><th>File</th><th>Folder</th><th>Uploaded</th><th class="num">Size</th><th></th></tr></thead><tbody>
+    ${out.map(f => `<tr><td>${esc(f.name)}</td><td class="muted">${esc(f.path.split('/')[1])}</td><td>${esc((f.at||'').slice(0,16).replace('T',' '))}</td>
+      <td class="num">${f.size ? (f.size/1024).toFixed(0)+' KB' : '—'}</td><td><button class="btn sm" data-receipt="${esc(f.path)}">Open</button></td></tr>`).join('')}
+    </tbody></table>` : '<div class="empty">No documents uploaded yet.</div>';
+}
+</script>
+</body>
+</html>
