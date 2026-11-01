@@ -377,11 +377,46 @@ async function init() {
   sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT') show('login'); });
 
   $('#btnGoogle').onclick = signIn;
+  setupGoogleButton().catch(e => toast(e.message, 'bad'));
   $('#btnOut').onclick = async () => { await sb.auth.signOut(); show('login'); };
 }
 
 // Sign-in without redirects or secrets: Apps Script (running as the visitor) asks Google for a
 // signed identity token for the visitor; Supabase verifies it against the allowed Google client IDs.
+
+// Google sign-in in the browser (Google Identity Services). Google gives the page a signed ID token,
+// which Supabase verifies. No client secret is involved.
+const GOOGLE_CLIENT_ID = '402970674976-5m1313oilv0is5rfuns109jo0rv4qif1.apps.googleusercontent.com';
+function loadGis() {
+  return new Promise((ok, fail) => {
+    if (window.google && google.accounts && google.accounts.id) return ok();
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+    s.onload = () => ok(); s.onerror = () => fail(new Error('Could not load Google sign-in. Check your connection and reload.'));
+    document.head.appendChild(s);
+  });
+}
+async function setupGoogleButton() {
+  await loadGis();
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    auto_select: false,
+    callback: async resp => {
+      const { data, error } = await sb.auth.signInWithIdToken({ provider: 'google', token: resp.credential });
+      if (error) { toast('Sign-in failed: ' + error.message, 'bad'); return; }
+      enter(data.session);
+    }
+  });
+  let box = document.getElementById('gisBtn');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'gisBtn';
+    box.style.cssText = 'display:flex;justify-content:center;min-height:44px';
+    $('#btnGoogle').after(box);
+  }
+  google.accounts.id.renderButton(box, { theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width: 320 });
+  $('#btnGoogle').style.display = 'none';
+}
+
 async function signIn() {
   const btn = $('#btnGoogle'); btn.disabled = true;
   try {
